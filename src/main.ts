@@ -6,7 +6,7 @@ async function bootstrap() {
   
   // THIS LINE IS CRITICAL
   app.enableCors({
-    origin: 'https://pixelstack-hub.vercel.app', // Your Vercel frontend URL
+    origin: 'https://pixelstack-arcade.vercel.app', // Your Vercel frontend URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
