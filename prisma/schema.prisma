@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?  // Added for Signup
+  email     String   @unique // Added for Gmail login requirement
+  username  String   @unique
+  password  String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  scores    Score[]
+  matches   Match[]  @relation("MatchToUser")
+}
+
+model Score {
+  id        String   @id @default(uuid())
+  gameType  String
+  value     Int
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Match {
+  id        String   @id @default(uuid())
+  gameType  String
+  winnerId  String?
+  playedAt  DateTime @default(now())
+  players   User[]   @relation("MatchToUser")
+}
