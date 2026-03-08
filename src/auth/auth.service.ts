@@ -19,7 +19,7 @@ export class AuthService {
       throw new BadRequestException('Username or Email already taken');
     }
 
-    return this.prisma.user.create({ 
+    const user = await this.prisma.user.create({ 
       data: {
         name: data.name,
         email: data.email,
@@ -27,6 +27,10 @@ export class AuthService {
         password: data.password
       }
     });
+
+    // 1. Strip the password before returning
+    const { password, ...result } = user; 
+    return result;
   }
 
   async login(identifier: string, password: any) {
@@ -43,6 +47,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return user;
+    // 2. Strip the password before returning
+    const { password: userPassword, ...result } = user; 
+    return result;
   }
 }
