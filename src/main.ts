@@ -4,13 +4,12 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // THIS LINE IS CRITICAL
   app.enableCors({
-    origin: 'https://pixelstack-arcade.vercel.app', // Your Vercel frontend URL
+    origin: ['https://pixelstack-arcade.vercel.app', 'http://localhost:4200'], 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
-  await app.listen(process.env.PORT || 10000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

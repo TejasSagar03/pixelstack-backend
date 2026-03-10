@@ -7,15 +7,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String?  // Added for Signup
-  email     String   @unique // Added for Gmail login requirement
-  username  String   @unique
+  id        String      @id @default(uuid())
+  name      String?     // Added for Signup
+  email     String      @unique // Added for Gmail login requirement
+  username  String      @unique
   password  String
   avatarUrl String?
-  createdAt DateTime @default(now())
+  createdAt DateTime    @default(now())
+  
   scores    Score[]
-  matches   Match[]  @relation("MatchToUser")
+  matches   Match[]     @relation("MatchToUser")
+  
+  // ADDED FOR UNO: Links the user to the seats they take in Uno games
+  unoPlayers UnoPlayer[] 
 }
 
 model Score {
@@ -33,4 +37,34 @@ model Match {
   winnerId  String?
   playedAt  DateTime @default(now())
   players   User[]   @relation("MatchToUser")
+}
+
+// --- NEW UNO MULTIPLAYER MODELS ---
+
+model UnoGame {
+  id            String      @id @default(uuid())
+  status        String      @default("WAITING") // WAITING, PLAYING, FINISHED
+  direction     Int         @default(1)         // 1 (clockwise) or -1 (counter)
+  currentTurn   String?     // ID of the user whose turn it is
+  topCard       Json?       // The current face-up card on the discard pile
+  deck          Json?       // Array of cards remaining in the draw pile
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  players       UnoPlayer[]
+}
+
+model UnoPlayer {
+  id          String   @id @default(uuid())
+  gameId      String
+  userId      String
+  position    Int      // Seat number: 0, 1, 2, 3
+  hand        Json     @default("[]") // Array of cards in the player's hand
+  isReady     Boolean  @default(false)
+  
+  game        UnoGame  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensures a user can't sit in the same exact game twice
+  @@unique([gameId, userId]) 
 }
